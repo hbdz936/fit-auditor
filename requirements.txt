@@ -13,3 +13,5 @@ structlog
 pytest
 pytest-asyncio
 httpx
+pypdf
+python-docx

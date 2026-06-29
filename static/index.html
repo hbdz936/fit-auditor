@@ -262,6 +262,22 @@
     border-radius: 4px;
     margin-bottom: 8px;
   }
+  .dropzone {
+    border: 1.5px dashed var(--line);
+    border-radius: 6px;
+    padding: 14px;
+    margin-bottom: 10px;
+    font-size: 12.5px;
+    color: var(--ink-light);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .dropzone:hover, .dropzone.dragover {
+    border-color: var(--coral);
+    background: var(--card);
+  }
+  .dropzone.loading { color: var(--coral-dark); }
   .badge-matched { background: rgba(31,157,85,0.12); color: var(--green-dark); border: 1px solid rgba(31,157,85,0.35); }
   .badge-partial { background: rgba(180,83,9,0.10); color: var(--amber); border: 1px solid rgba(180,83,9,0.3); }
   .badge-gap { background: rgba(192,54,44,0.10); color: var(--red); border: 1px solid rgba(192,54,44,0.3); }
@@ -331,7 +347,11 @@
   <div class="input-grid">
     <div class="field">
       <label for="resumeInput">Resume</label>
-      <textarea id="resumeInput" placeholder="Paste resume text here..."></textarea>
+      <div class="dropzone" id="dropzone">
+        <span id="dropzoneText">Drop a resume (PDF or DOCX) here, or click to choose a file — you can edit the extracted text below.</span>
+        <input type="file" id="resumeFile" accept=".pdf,.docx" hidden>
+      </div>
+      <textarea id="resumeInput" placeholder="Paste resume text here, or upload a file above..."></textarea>
     </div>
     <div class="field">
       <label for="jdInput">Job description</label>
@@ -376,6 +396,61 @@ async function loadDemo() {
   const data = await res.json();
   document.getElementById('resumeInput').value = data.resume;
   document.getElementById('jdInput').value = data.jd;
+}
+const dropzone = document.getElementById('dropzone');
+const resumeFileInput = document.getElementById('resumeFile');
+const dropzoneText = document.getElementById('dropzoneText');
+
+dropzone.addEventListener('click', () => resumeFileInput.click());
+
+dropzone.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  dropzone.classList.add('dragover');
+});
+dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+dropzone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropzone.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleResumeFile(e.dataTransfer.files[0]);
+});
+resumeFileInput.addEventListener('change', () => {
+  if (resumeFileInput.files.length) handleResumeFile(resumeFileInput.files[0]);
+});
+
+async function handleResumeFile(file) {
+  const name = file.name.toLowerCase();
+  if (!name.endsWith('.pdf') && !name.endsWith('.docx')) {
+    dropzoneText.textContent = 'Only .pdf and .docx files are supported. Try again.';
+    return;
+  }
+
+  dropzone.classList.add('loading');
+  dropzoneText.textContent = `Extracting text from ${file.name}…`;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const res = await fetch('/api/extract-resume', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + API_TOKEN },
+      body: formData
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      dropzoneText.textContent = data.detail || 'Could not extract text. Try pasting it instead.';
+      dropzone.classList.remove('loading');
+      return;
+    }
+
+    document.getElementById('resumeInput').value = data.text;
+    dropzoneText.textContent = `Loaded from ${file.name} — feel free to edit below before running.`;
+  } catch (err) {
+    dropzoneText.textContent = 'Upload failed. Try pasting the resume text instead.';
+  } finally {
+    dropzone.classList.remove('loading');
+  }
 }
 
 function resetUI() {

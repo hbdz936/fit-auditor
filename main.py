@@ -59,6 +59,33 @@ async def get_scenario():
     jd = (BASE_DIR / "data" / "sample_jd.txt").read_text()
     return {"resume": resume, "jd": jd}
 
+from fastapi import UploadFile, File
+from core.resume_extract import extract_text, UnsupportedFileType
+
+MAX_UPLOAD_BYTES = 5 * 1024 * 1024  # 5MB — resumes are small; this blocks accidental huge uploads
+
+
+@app.post("/api/extract-resume", dependencies=[Depends(require_api_token)])
+async def extract_resume(file: UploadFile = File(...)):
+    if not file.filename.lower().endswith((".pdf", ".docx")):
+        raise HTTPException(status_code=400, detail="Only .pdf and .docx files are supported.")
+
+    contents = await file.read()
+    if len(contents) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=400, detail="File too large (max 5MB).")
+
+    try:
+        text = extract_text(file.filename, contents)
+    except UnsupportedFileType:
+        raise HTTPException(status_code=400, detail="Unsupported file type.")
+    except Exception:
+        log.error("resume_extraction_failed", filename=file.filename, exc_info=True)
+        raise HTTPException(status_code=422, detail="Could not extract text from this file. Try pasting the resume text instead.")
+
+    if not text.strip():
+        raise HTTPException(status_code=422, detail="No text could be extracted from this file. It may be a scanned/image-based document — try pasting the text instead.")
+
+    return {"text": text}
 
 def _sse(event_type: str, data: dict) -> str:
     return f"data: {json.dumps({'event_type': event_type, 'data': data})}\n\n"
