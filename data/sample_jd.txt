@@ -1,0 +1,9 @@
+We are hiring a Backend Engineer to join our platform team.
+
+Requirements:
+- 2+ years of experience building REST APIs in Python
+- Hands-on experience with distributed systems concepts such as load balancing
+- Experience with cloud-based data pipelines (Databricks, Spark, or similar)
+- Familiarity with container orchestration (Kubernetes)
+- Experience mentoring or leading junior engineers
+- Working knowledge of CI/CD pipelines

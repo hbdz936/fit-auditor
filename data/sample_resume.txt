@@ -1,0 +1,15 @@
+Aanya Verma
+Backend Developer
+
+Experience
+Built and maintained REST APIs in Python using FastAPI for an e-commerce platform serving 50k daily users.
+Implemented a Layer 7 reverse proxy with round-robin and least-connections load balancing strategies.
+Designed a Databricks medallion architecture pipeline for incremental data loads across a multi-region data lake.
+Migrated a monolithic Flask service into modular microservices, reducing average response time by 30%.
+Mentored two junior engineers during a six-month internship program.
+
+Skills
+Python, FastAPI, Flask, SQL, Databricks, Docker, Git
+
+Education
+B.Tech Computer Science, 2024

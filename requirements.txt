@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+groq
+python-dotenv
+pydantic
+pydantic-settings
+sqlalchemy[asyncio]
+asyncpg
+alembic
+sentence-transformers
+tenacity
+structlog
+pytest
+pytest-asyncio
+httpx

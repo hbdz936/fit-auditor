@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitAuditor — Resume Audit, Verified</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF6F0;
+    --card: #F2EBE2;
+    --coral: #F08A6E;
+    --coral-dark: #D96E50;
+    --ink: #1A1A1A;
+    --ink-light: #6B6B6B;
+    --line: #E8E1D8;
+    --white: #ffffff;
+
+    --green: #1f9d55;
+    --green-dark: #168245;
+    --red: #c0362c;
+    --amber: #b45309;
+
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-body: 'Inter', -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: var(--cream);
+  }
+  a { color: var(--ink); }
+
+  /* ---------- header ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 48px;
+    position: sticky;
+    top: 0;
+    background: var(--cream);
+    z-index: 10;
+  }
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 19px;
+    color: var(--ink);
+    letter-spacing: -0.2px;
+  }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a {
+    font-size: 14px;
+    text-decoration: underline;
+    text-decoration-color: var(--line);
+    text-underline-offset: 4px;
+    color: var(--ink);
+  }
+  .btn-primary {
+    background: var(--coral);
+    color: var(--white);
+    border: none;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    font-family: var(--font-body);
+  }
+  .btn-primary:hover { background: var(--coral-dark); }
+  .btn-primary:disabled { background: var(--line); color: var(--ink-light); cursor: not-allowed; }
+  .btn-primary:focus-visible, .btn-text:focus-visible, .chip:focus-visible {
+    outline: 2px solid var(--coral-dark);
+    outline-offset: 2px;
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: 56px 48px 64px;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--coral-dark);
+    letter-spacing: 0.04em;
+    margin-bottom: 18px;
+  }
+  .eyebrow span { color: var(--ink-light); font-weight: 400; }
+  h1 {
+    font-family: var(--font-display);
+    font-size: 46px;
+    line-height: 1.16;
+    font-weight: 600;
+    color: var(--coral);
+    max-width: 780px;
+    margin: 0 0 22px;
+  }
+  .subhead {
+    font-size: 16px;
+    color: var(--ink-light);
+    max-width: 600px;
+    line-height: 1.65;
+    margin-bottom: 28px;
+  }
+
+  /* ---------- input panel ---------- */
+  .panel {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 48px 56px;
+  }
+  .input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--ink-light);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  textarea {
+    width: 100%;
+    height: 180px;
+    resize: vertical;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--white);
+  }
+  textarea:focus { outline: 2px solid var(--coral); outline-offset: 1px; }
+  .actions { display: flex; align-items: center; gap: 20px; margin-top: 20px; }
+  .btn-text {
+    background: none; border: none; color: var(--ink);
+    font-size: 14px; cursor: pointer;
+    text-decoration: underline; text-decoration-color: var(--line);
+    text-underline-offset: 4px;
+    padding: 0; font-family: var(--font-body);
+  }
+  .status-line { font-size: 13px; color: var(--ink-light); }
+
+  /* ---------- fit score statement (signature element) ---------- */
+  .fit-statement {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 40px 48px;
+    margin: 0 auto 56px;
+    max-width: 1180px;
+  }
+  .fit-statement-inner {
+    padding: 0 48px;
+  }
+  .fit-statement .hidden-wrap { display: none; }
+  .fit-number {
+    font-family: var(--font-display);
+    font-size: 64px;
+    font-weight: 700;
+    color: var(--coral);
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .fit-narrative {
+    font-size: 17px;
+    color: var(--ink);
+    max-width: 560px;
+    line-height: 1.5;
+  }
+  .fit-meta-row {
+    display: flex;
+    gap: 36px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  .fit-meta-item { font-size: 13px; color: var(--ink-light); }
+  .fit-meta-item strong { color: var(--ink); font-weight: 600; display: block; font-size: 15px; margin-bottom: 2px; }
+
+  /* ---------- workspace ---------- */
+  .workspace-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--coral-dark);
+    letter-spacing: 0.04em;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+  .workspace {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 1180px;
+    margin: 16px auto 96px;
+    padding: 0 48px;
+  }
+  .workspace-col {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--white);
+  }
+  .workspace-header {
+    background: var(--card);
+    padding: 14px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line);
+  }
+  .workspace-body { max-height: 540px; overflow-y: auto; }
+
+  .resume-line {
+    display: flex;
+    gap: 12px;
+    padding: 9px 18px;
+    border-left: 3px solid transparent;
+    font-size: 13px;
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+  .resume-line .lid {
+    font-family: var(--font-mono);
+    color: var(--ink-light);
+    flex-shrink: 0;
+    width: 38px;
+  }
+  .resume-line.hl-matched { border-color: var(--green); background: rgba(31,157,85,0.06); }
+  .resume-line.hl-partial { border-color: var(--amber); background: rgba(180,83,9,0.06); }
+  .resume-line.hl-unverified { border-color: var(--amber); background: rgba(180,83,9,0.1); }
+  .resume-line.pulse { animation: pulse 0.9s ease; }
+  @keyframes pulse { 0% { background: rgba(240,138,110,0.28); } 100% { background: inherit; } }
+
+  .verdict-row {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--line);
+    animation: fadeIn 0.35s ease;
+  }
+  .verdict-row:last-child { border-bottom: none; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    padding: 3px 9px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .badge-matched { background: rgba(31,157,85,0.12); color: var(--green-dark); border: 1px solid rgba(31,157,85,0.35); }
+  .badge-partial { background: rgba(180,83,9,0.10); color: var(--amber); border: 1px solid rgba(180,83,9,0.3); }
+  .badge-gap { background: rgba(192,54,44,0.10); color: var(--red); border: 1px solid rgba(192,54,44,0.3); }
+  .badge-unverified {
+    background: repeating-linear-gradient(45deg, rgba(180,83,9,0.07), rgba(180,83,9,0.07) 4px, rgba(180,83,9,0.14) 4px, rgba(180,83,9,0.14) 8px);
+    color: var(--amber);
+    border: 1px dashed var(--amber);
+  }
+  .requirement-text { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .rationale-text { font-size: 13px; color: var(--ink-light); margin-bottom: 10px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background: var(--cream);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 3px 9px;
+    cursor: pointer;
+  }
+  .chip:hover { background: var(--coral); color: var(--white); border-color: var(--coral); }
+  .verify-note {
+    font-size: 12px;
+    color: var(--amber);
+    margin-top: 10px;
+    border-left: 2px dashed var(--amber);
+    padding-left: 10px;
+  }
+
+  .hidden { display: none; }
+
+  @media (max-width: 860px) {
+    .input-grid, .workspace { grid-template-columns: 1fr; }
+    h1 { font-size: 34px; }
+    .topbar, .hero, .panel, .workspace-label, .workspace { padding-left: 24px; padding-right: 24px; }
+    .fit-statement { margin-left: 24px; margin-right: 24px; padding: 28px 24px; }
+    .fit-number { font-size: 48px; }
+    .fit-meta-row { flex-wrap: wrap; gap: 20px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .verdict-row, .resume-line.pulse { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wordmark">FitAuditor</div>
+  <nav class="nav-links">
+    <a href="#workspace">How it works</a>
+    <button class="btn-primary" onclick="document.getElementById('jdInput').focus()">Run an audit</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Hiring tools <span>›</span> resume audit <span>›</span> citation-verified</div>
+  <h1>An audit that can't bluff.</h1>
+  <p class="subhead">
+    Every verdict cites the exact resume line it's based on. A separate verification pass
+    checks those citations against the real text — so a confident-sounding match that isn't
+    actually backed by the resume gets caught and flagged, not taken at the model's word.
+  </p>
+</section>
+
+<section class="panel">
+  <div class="input-grid">
+    <div class="field">
+      <label for="resumeInput">Resume</label>
+      <textarea id="resumeInput" placeholder="Paste resume text here..."></textarea>
+    </div>
+    <div class="field">
+      <label for="jdInput">Job description</label>
+      <textarea id="jdInput" placeholder="Paste job description here..."></textarea>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="btn-primary" id="runBtn" onclick="runAudit()">Run audit</button>
+    <button class="btn-text" onclick="loadDemo()">Load demo scenario</button>
+    <span class="status-line" id="statusLine"></span>
+  </div>
+</section>
+
+<section class="fit-statement hidden" id="fitStatement">
+  <div class="fit-number" id="statFit">—</div>
+  <div class="fit-narrative" id="fitNarrative">Run an audit to see the fit score.</div>
+  <div class="fit-meta-row">
+    <div class="fit-meta-item"><strong id="statTotal">—</strong>requirements found</div>
+    <div class="fit-meta-item"><strong id="statVerified">—</strong>verified citations</div>
+    <div class="fit-meta-item"><strong id="statRisk">—</strong>risk flags</div>
+  </div>
+</section>
+
+<div class="workspace-label" id="workspace">Audit trail</div>
+<section class="workspace">
+  <div class="workspace-col">
+    <div class="workspace-header">Resume — line indexed</div>
+    <div class="workspace-body" id="resumePane"></div>
+  </div>
+  <div class="workspace-col">
+    <div class="workspace-header">Verdicts, as they're verified</div>
+    <div class="workspace-body" id="auditPane"></div>
+  </div>
+</section>
+
+<script>
+let lineMap = {};
+const API_TOKEN = 'AxOyvcUjF-VCZDUgLAsGZ3nsbO4woPYOGyrWr6m4MwA'; // must match API_TOKEN in your .env
+
+async function loadDemo() {
+  const res = await fetch('/api/scenario');
+  const data = await res.json();
+  document.getElementById('resumeInput').value = data.resume;
+  document.getElementById('jdInput').value = data.jd;
+}
+
+function resetUI() {
+  document.getElementById('auditPane').innerHTML = '';
+  document.getElementById('resumePane').innerHTML = '';
+  document.getElementById('fitStatement').classList.add('hidden');
+  document.getElementById('statusLine').textContent = '';
+  lineMap = {};
+}
+
+function renderResumeLines(lines) {
+  const pane = document.getElementById('resumePane');
+  lines.forEach(line => {
+    lineMap[line.id] = line.text;
+    const row = document.createElement('div');
+    row.className = 'resume-line';
+    row.id = 'line-' + line.id;
+    row.innerHTML = `<span class="lid">${line.id}</span><span>${escapeHtml(line.text)}</span>`;
+    pane.appendChild(row);
+  });
+}
+
+function statusClass(status) {
+  return { MATCHED: 'matched', PARTIAL: 'partial', GAP: 'gap', UNVERIFIED: 'unverified' }[status] || '';
+}
+
+function highlightLines(ids, status) {
+  const cls = statusClass(status);
+  if (cls === 'gap') return;
+  ids.forEach(id => {
+    const row = document.getElementById('line-' + id);
+    if (!row) return;
+    row.classList.add('hl-' + cls, 'pulse');
+    setTimeout(() => row.classList.remove('pulse'), 900);
+  });
+}
+
+function appendVerdictRow(v) {
+  const pane = document.getElementById('auditPane');
+  const row = document.createElement('div');
+  row.className = 'verdict-row';
+
+  const chips = (v.evidence_line_ids || []).map(id =>
+    `<span class="chip" onclick="jumpTo('${id}')">${id}</span>`
+  ).join('');
+
+  row.innerHTML = `
+    <span class="badge badge-${statusClass(v.status)}">${v.status}</span>
+    <div class="requirement-text">${escapeHtml(v.requirement)}</div>
+    <div class="rationale-text">${escapeHtml(v.rationale)}</div>
+    <div class="chips">${chips}</div>
+    ${v.verification_note ? `<div class="verify-note">${escapeHtml(v.verification_note)}</div>` : ''}
+  `;
+  pane.appendChild(row);
+  pane.scrollTop = pane.scrollHeight;
+}
+
+function jumpTo(id) {
+  const row = document.getElementById('line-' + id);
+  if (!row) return;
+  row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  row.classList.add('pulse');
+  setTimeout(() => row.classList.remove('pulse'), 900);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function narrativeFor(fitScore, riskFlags, total) {
+  if (total === 0) return "No requirements were extracted from that job description.";
+  if (fitScore >= 80 && riskFlags === 0) return `Strong match — ${fitScore}% of requirements are backed by verified resume lines.`;
+  if (fitScore >= 50) return `Partial match at ${fitScore}%, with ${riskFlags} citation${riskFlags === 1 ? '' : 's'} flagged for review.`;
+  return `Low match at ${fitScore}% — most requirements aren't clearly backed by this resume.`;
+}
+
+async function runAudit() {
+  const resumeText = document.getElementById('resumeInput').value.trim();
+  const jdText = document.getElementById('jdInput').value.trim();
+  if (!resumeText || !jdText) {
+    document.getElementById('statusLine').textContent = 'Add both a resume and a job description first.';
+    return;
+  }
+
+  resetUI();
+  const btn = document.getElementById('runBtn');
+  btn.disabled = true;
+  btn.textContent = 'Auditing…';
+  document.getElementById('statusLine').textContent = 'Streaming live audit trail…';
+
+  const res = await fetch('/api/audit', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + API_TOKEN
+    },
+    body: JSON.stringify({ resume_text: resumeText, jd_text: jdText })
+  });
+
+  if (!res.ok) {
+    document.getElementById('statusLine').textContent =
+      res.status === 401 ? 'Unauthorized — check API token.' : 'Something went wrong starting the audit.';
+    btn.disabled = false;
+    btn.textContent = 'Run audit';
+    return;
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    const parts = buffer.split('\n\n');
+    buffer = parts.pop();
+
+    for (const part of parts) {
+      if (!part.startsWith('data: ')) continue;
+      const evt = JSON.parse(part.slice(6));
+      handleEvent(evt);
+    }
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Run audit';
+}
+
+function handleEvent(evt) {
+  if (evt.event_type === 'PARSED') {
+    renderResumeLines(evt.data.lines);
+  } else if (evt.event_type === 'VERDICT') {
+    appendVerdictRow(evt.data);
+    highlightLines(evt.data.evidence_line_ids || [], evt.data.status);
+  } else if (evt.event_type === 'SUMMARY') {
+    document.getElementById('fitStatement').classList.remove('hidden');
+    document.getElementById('statFit').textContent = evt.data.fit_score + '%';
+    document.getElementById('statTotal').textContent = evt.data.total_requirements;
+    document.getElementById('statVerified').textContent = evt.data.verified;
+    document.getElementById('statRisk').textContent = evt.data.risk_flags;
+    document.getElementById('fitNarrative').textContent =
+      narrativeFor(evt.data.fit_score, evt.data.risk_flags, evt.data.total_requirements);
+    document.getElementById('statusLine').textContent = 'Audit complete.';
+  } else if (evt.event_type === 'ERROR') {
+    document.getElementById('statusLine').textContent = evt.data.message;
+  }
+}
+</script>
+
+</body>
+</html>
